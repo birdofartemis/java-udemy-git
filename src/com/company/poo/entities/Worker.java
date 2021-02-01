@@ -58,7 +58,7 @@ public class Worker {
     public List<HourContract> getContractsList() {
         return contractsList;
     }
-
+//Functions
     public void addContract(HourContract contract){
         contractsList.add(contract);
     }
