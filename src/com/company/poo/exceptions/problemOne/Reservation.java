@@ -1,22 +1,23 @@
 package com.company.poo.exceptions.problemOne;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class Reservation {
     private Integer roomNumber;
-    private Date checkin;
-    private Date checkout;
+    private Date checkIn;
+    private Date checkOut;
 
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-    public Reservation(Integer roomNumber, Date checkin, Date checkout) {
+    public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+        if (!checkOut.after(checkIn)) {
+            throw new DomainException("Check-out date must be after check-in date");
+        }
         this.roomNumber = roomNumber;
-        this.checkin = checkin;
-        this.checkout = checkout;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
     }
 
     public Integer getRoomNumber() {
@@ -27,26 +28,41 @@ public class Reservation {
         this.roomNumber = roomNumber;
     }
 
-    public Date getCheckin() {
-        return checkin;
+    public Date getCheckIn() {
+        return checkIn;
     }
 
-    public Date getCheckout() {
-        return checkout;
+    public Date getCheckOut() {
+        return checkOut;
     }
 
-    public long duration(){
-       long diff = getCheckout().getTime()-getCheckin().getTime();
-       return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+    public long duration() {
+        long diff = checkOut.getTime() - checkIn.getTime();
+        return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
     }
 
-    void updateDate(Date checkin, Date checkout){
-        this.checkin = checkin;
-        this.checkout = checkout;
+    public void updateDates(Date checkIn, Date checkOut) {
+        Date now = new Date();
+        if (checkIn.before(now) || checkOut.before(now)) {
+            throw new DomainException("Reservation dates for update must be future dates");
+        }
+        if (!checkOut.after(checkIn)) {
+            throw new DomainException("Check-out date must be after check-in date");
+        }
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
     }
+
     @Override
-    public final String toString(){
-        return "Reservation: Room " + getRoomNumber() + ", checkin " + sdf.format(getCheckin()) + ", checkOut "
-                + sdf.format(getCheckout()) + ", nights: " + duration();
+    public String toString() {
+        return "Room "
+                + roomNumber
+                + ", check-in: "
+                + sdf.format(checkIn)
+                + ", check-out: "
+                + sdf.format(checkOut)
+                + ", "
+                + duration()
+                + " nights";
     }
 }
